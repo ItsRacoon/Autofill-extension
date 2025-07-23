@@ -1,0 +1,89 @@
+📥 College Form Autofiller script loaded - Enhanced Version
+content.js:633 🚀 Initializing Enhanced College Form Autofiller...
+content.js:652 ✨ Enhanced College Form Autofiller loaded successfully!
+content.js:158 📋 Loaded form data: Object
+content.js:456 🔄 Starting enhanced autofill process...
+content.js:473 📊 Found 17 question containers
+content.js:489 📝 Processing question 1: "USN No"
+content.js:212 🔍 Question: "USN No" -> Match: usn (Score: 90)
+content.js:507 ✅ Processing: usn = "1DS22IS184" for question: "USN No"
+content.js:523 ✅ Successfully filled text input: usn = "1DS22IS184"
+content.js:489 📝 Processing question 2: "Full Name *"
+content.js:212 🔍 Question: "Full Name *" -> Match: fullName (Score: 107)
+content.js:501 ⚠️ No data found for key: fullName
+content.js:489 📝 Processing question 3: "Email Id *"
+content.js:212 🔍 Question: "Email Id *" -> Match: personalEmail (Score: 108)
+content.js:507 ✅ Processing: personalEmail = "evishesh7@gmail.com" for question: "Email Id *"
+content.js:523 ✅ Successfully filled text input: personalEmail = "evishesh7@gmail.com"
+content.js:489 📝 Processing question 4: "Mobile Number *"
+content.js:212 🔍 Question: "Mobile Number *" -> Match: phone (Score: 107)
+content.js:507 ✅ Processing: phone = "860331559" for question: "Mobile Number *"
+content.js:523 ✅ Successfully filled text input: phone = "860331559"
+content.js:489 📝 Processing question 5: "Gender *"
+content.js:212 🔍 Question: "Gender *" -> Match: gender (Score: 108)
+content.js:507 ✅ Processing: gender = "Male" for question: "Gender *"
+content.js:546 ✅ Successfully filled radio: gender = "Male"
+content.js:489 📝 Processing question 6: "Date of Birth *"
+content.js:212 🔍 Question: "Date of Birth *" -> Match: dob (Score: 108)
+content.js:507 ✅ Processing: dob = "22-09-2003" for question: "Date of Birth *"
+content.js:302 The specified value "22-09-2003" does not conform to the required format, "yyyy-MM-dd".
+fillInputField @ content.js:302Understand this warning
+content.js:305 The specified value "22-09-2003" does not conform to the required format, "yyyy-MM-dd".
+fillInputField @ content.js:305Understand this warning
+content.js:536 ✅ Successfully filled date input: dob = "22-09-2003"
+content.js:328 ⚠️ Value verification failed, retrying...
+content.js:329 The specified value "22-09-2003" does not conform to the required format, "yyyy-MM-dd".
+(anonymous) @ content.js:329Understand this warning
+content.js:489 📝 Processing question 7: "NECT written test Completed  *"
+content.js:212 🔍 Question: "NECT written test Completed  *" -> Match: personalEmail (Score: 8)
+content.js:507 ✅ Processing: personalEmail = "evishesh7@gmail.com" for question: "NECT written test Completed  *"
+content.js:550 ❌ Failed to fill: personalEmail for question: "NECT written test Completed  *"
+content.js:489 📝 Processing question 8: "Campus *"
+content.js:212 🔍 Question: "Campus *" -> Match: personalEmail (Score: 8)
+content.js:507 ✅ Processing: personalEmail = "evishesh7@gmail.com" for question: "Campus *"
+content.js:550 ❌ Failed to fill: personalEmail for question: "Campus *"
+content.js:489 📝 Processing question 9: "10th % *"
+content.js:212 🔍 Question: "10th % *" -> Match: tenth (Score: 107)
+content.js:507 ✅ Processing: tenth = "84" for question: "10th % *"
+content.js:523 ✅ Successfully filled text input: tenth = "84"
+content.js:489 📝 Processing question 10: "Inter % or PUC % *"
+content.js:212 🔍 Question: "Inter % or PUC % *" -> Match: twelfth (Score: 87)
+content.js:507 ✅ Processing: twelfth = "78" for question: "Inter % or PUC % *"
+content.js:523 ✅ Successfully filled text input: twelfth = "78"
+content.js:489 📝 Processing question 11: "Graduation  *"
+content.js:212 🔍 Question: "Graduation  *" -> Match: personalEmail (Score: 8)
+content.js:507 ✅ Processing: personalEmail = "evishesh7@gmail.com" for question: "Graduation  *"
+content.js:550 ❌ Failed to fill: personalEmail for question: "Graduation  *"
+content.js:489 📝 Processing question 12: "Graduation %  *"
+content.js:212 🔍 Question: "Graduation %  *" -> Match: personalEmail (Score: 8)
+content.js:507 ✅ Processing: personalEmail = "evishesh7@gmail.com" for question: "Graduation %  *"
+content.js:523 ✅ Successfully filled text input: personalEmail = "evishesh7@gmail.com"
+content.js:489 📝 Processing question 13: "Post Graduation % ( For MCA, M.Tech Students) [mention Marks other write NA] *"
+content.js:212 🔍 Question: "Post Graduation % ( For MCA, M.Tech Students) [mention Marks other write NA] *" -> Match: usn (Score: 70)
+content.js:507 ✅ Processing: usn = "1DS22IS184" for question: "Post Graduation % ( For MCA, M.Tech Students) [mention Marks other write NA] *"
+content.js:523 ✅ Successfully filled text input: usn = "1DS22IS184"
+content.js:489 📝 Processing question 14: "Do you have Backlogs *"
+content.js:212 🔍 Question: "Do you have Backlogs *" -> Match: backlogs (Score: 88)
+content.js:507 ✅ Processing: backlogs = "No" for question: "Do you have Backlogs *"
+content.js:546 ✅ Successfully filled radio: backlogs = "No"
+content.js:489 📝 Processing question 15: "Are you seriously interested in 
+
+Data Science & AI Intern  job role and ready to join immediately *"
+content.js:212 🔍 Question: "Are you seriously interested in 
+
+Data Science & AI Intern  job role and ready to join immediately *" -> Match: dob (Score: 68)
+content.js:507 ✅ Processing: dob = "22-09-2003" for question: "Are you seriously interested in 
+
+Data Science & AI Intern  job role and ready to join immediately *"
+content.js:550 ❌ Failed to fill: dob for question: "Are you seriously interested in 
+
+Data Science & AI Intern  job role and ready to join immediately *"
+content.js:489 📝 Processing question 16: "Are you placed, if yes, please mention the company name and CTC *"
+content.js:212 🔍 Question: "Are you placed, if yes, please mention the company name and CTC *" -> Match: placementStatus (Score: 88)
+content.js:501 ⚠️ No data found for key: placementStatus
+content.js:489 📝 Processing question 17: "Upload your latest resume in PDF format *"
+content.js:212 🔍 Question: "Upload your latest resume in PDF format *" -> Match: gender (Score: 68)
+content.js:507 ✅ Processing: gender = "Male" for question: "Upload your latest resume in PDF format *"
+content.js:550 ❌ Failed to fill: gender for question: "Upload your latest resume in PDF format *"
+content.js:563 🎉 Autofill completed! Successfully filled 10 fields.
+content.js:566 ⚠️ Failed fields: Array(7)

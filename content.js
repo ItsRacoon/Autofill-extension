@@ -1,119 +1,179 @@
-// content.js - Enhanced College Form Autofiller with Bug Fixes
-console.log("📥 College Form Autofiller script loaded");
+// content.js - Enhanced College Form Autofiller - Robust Version
+console.log("📥 College Form Autofiller script loaded - Enhanced Version");
 
-// Comprehensive field mappings with extensive variations
+// More precise field mappings with specificity priority
 const fieldMappings = {
-  // USN variations
-  'usn': ['USN', 'usn', 'University Seat Number', 'Student ID', 'Roll Number', 'Registration Number'],
+  // USN - highest priority for unique identifiers
+  'usn': {
+    patterns: ['USN', 'usn', 'University Seat Number', 'Student ID', 'Roll Number', 'Registration Number', 'USN No'],
+    priority: 10,
+    exactMatch: true
+  },
   
-  // Name variations - fixed to avoid overlap
-  'name': [
-    'FULL NAME', 'Full Name', 'Student Name', 'Complete Name',
-    'Student Full Name', 'Your Name', 'Enter Name', 'Enter Full Name'
-  ],
-  'firstName': ['FIRST_NAME', 'First Name', 'First name', 'fname', 'Given Name'],
-  'middleName': ['MIDDLE_NAME', 'Middle Name', 'Middle name', 'mname'],
-  'lastName': ['LAST_NAME', 'Last Name', 'Last name', 'lname', 'Surname', 'Family Name'],
+  // Name fields - ordered by specificity to avoid conflicts
+  'firstName': {
+    patterns: ['FIRST_NAME', 'First Name', 'First name', 'fname', 'Given Name'],
+    priority: 9,
+    exactMatch: false
+  },
+  'middleName': {
+    patterns: ['MIDDLE_NAME', 'Middle Name', 'Middle name', 'mname'],
+    priority: 9,
+    exactMatch: false
+  },
+  'lastName': {
+    patterns: ['LAST_NAME', 'Last Name', 'Last name', 'lname', 'Surname', 'Family Name'],
+    priority: 9,
+    exactMatch: false
+  },
+  'fullName': {
+    patterns: [
+      'FULL NAME', 'Full Name', 'Student Name', 'Complete Name',
+      'Student Full Name', 'Your Name', 'Enter Name', 'Enter Full Name'
+    ],
+    priority: 9,
+    exactMatch: false
+  },
   
-  // Contact information
-  'email': [
-    'E mail ID', 'EMAIL_ID', 'Email ID', 'Email', 'email', 'E-mail', 'Gmail ID',
-    'Personal Email', 'Gmail', 'Mail ID', 'Email Address', 'Personal Mail',
-    'only gmail', 'Ensure no typo mistakes'
-  ],
-  'collegeEmail': [
-    'College mail id', 'College Email', 'Institutional Email', 'College Email ID',
-    'University Email', 'Official Email', 'Academic Email'
-  ],
-  'phone': [
-    'Mobile Number', 'MOBILE_NO', 'Mobile No', 'Phone Number', 'Contact Number',
-    'Mobile Number (Only 10 Digit)', 'only 10 digits', '10 digits', 'Cell Number',
-    'Phone', 'Mobile', 'Contact No'
-  ],
+  // Email fields - differentiated clearly
+  'personalEmail': {
+    patterns: [
+      'EMAIL_ID ( Ensure no typo mistakes)  only gmail. No college mail ids',
+      'E mail ID', 'EMAIL_ID', 'Email ID', 'Email', 'email', 'E-mail', 
+      'Gmail ID', 'Personal Email', 'Gmail', 'Mail ID', 'Email Address', 
+      'Personal Mail', 'only gmail', 'Ensure no typo mistakes'
+    ],
+    priority: 8,
+    exactMatch: false,
+    keywords: ['gmail', 'personal', 'only gmail', 'no college']
+  },
+  'collegeEmail': {
+    patterns: [
+      'College mail id', 'College Email', 'Institutional Email', 'College Email ID',
+      'University Email', 'Official Email', 'Academic Email'
+    ],
+    priority: 8,
+    exactMatch: false,
+    keywords: ['college', 'institutional', 'university', 'official', 'academic']
+  },
   
-  // Personal details
-  'gender': ['Gender', 'GENDER', 'Sex', 'Male/Female', 'M/F'],
-  'dob': [
-    'Enter the date of birth', 'DOB', 'Date of Birth', 'Birth Date', 'Date',
-    'Enter the date of birth (DD-MM-YYYY)', 'Date of Birth (DD-MM-YYYY)', 'DOB (DD-MM-YYYY)'
-  ],
+  // Contact and personal info
+  'phone': {
+    patterns: [
+      'Mobile Number', 'MOBILE_NO', 'Mobile No', 'Phone Number', 'Contact Number',
+      'Mobile Number (Only 10 Digit)', 'only 10 digits', '10 digits', 'Cell Number',
+      'Phone', 'Mobile', 'Contact No'
+    ],
+    priority: 7,
+    exactMatch: false
+  },
+  'gender': {
+    patterns: ['Gender', 'GENDER', 'Sex', 'Male/Female', 'M/F'],
+    priority: 8,
+    exactMatch: true
+  },
+  'dob': {
+    patterns: [
+      'Enter the date of birth', 'DOB', 'Date of Birth', 'Birth Date', 'Date',
+      'Enter the date of birth (DD-MM-YYYY)', 'Date of Birth (DD-MM-YYYY)', 'DOB (DD-MM-YYYY)'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
   
   // Academic details
-  'tenth': [
-    '10%', '10th %', 'SSLC %', 'Class 10 %', 'Tenth Percentage',
-    '10th Percentage', 'SSC %', 'Matriculation %'
-  ],
-  'twelfth': [
-    '12th / Diploma %', '12th/Diploma %', '12th %', 'PUC %', 'Class 12 %', 
-    'HSC %', 'Diploma %', 'Higher Secondary %', 'Intermediate %',
-    '12th Percentage', 'PU %'
-  ],
-  'course': [
-    'Course', 'Program', 'Degree', 'Course Type'
-  ],
-  'branch': [
-    'UG BRANCH', 'Branch', 'Department', 'Specialization', 'Stream',
-    'Engineering Branch', 'Subject', 'Major', 'Field of Study',
-    'UG Branch', 'Undergraduate Branch'
-  ],
-  'cgpa': [
-    'CGPA', 'BE/B.TECH CGPA', 'UG CGPA', 'BE/B.TECH CGPA/UG', 'GPA',
-    'Current CGPA', 'Overall CGPA', 'Aggregate CGPA'
-  ],
-  'mcaCgpa': ['MCA CGPA', 'PG CGPA', 'Masters CGPA', 'Post Graduate CGPA'],
+  'tenth': {
+    patterns: [
+      '10%', '10th %', 'SSLC %', 'Class 10 %', 'Tenth Percentage',
+      '10th Percentage', 'SSC %', 'Matriculation %'
+    ],
+    priority: 7,
+    exactMatch: false
+  },
+  'twelfth': {
+    patterns: [
+      '12th / Diploma %', '12th/Diploma %', '12th %', 'PUC %', 'Class 12 %', 
+      'HSC %', 'Diploma %', 'Higher Secondary %', 'Intermediate %',
+      '12th Percentage', 'PU %', 'Inter % or PUC %'
+    ],
+    priority: 7,
+    exactMatch: false
+  },
+  'graduationPercent': {
+    patterns: [
+      'Graduation %', 'Graduation Percentage', 'UG %', 'BE %', 'B.Tech %', 
+      'BTech %', 'Degree %', 'Graduation Marks', 'UG Percentage', 'BE/B.TECH CGPA',
+      'CGPA', 'GPA', 'Current CGPA', 'Overall CGPA', 'Aggregate CGPA'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'postGraduationPercent': {
+    patterns: [
+      'Post Graduation %', 'PG %', 'MCA %', 'M.Tech %', 'MTech %', 
+      'Masters %', 'Post Graduation Percentage', 'PG Percentage',
+      'Post Graduation % ( For MCA, M.Tech Students)', 'Post Graduation % ( For MCA, M.Tech Students) [mention Marks other write NA]'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'campus': {
+    patterns: [
+      'Campus', 'College Campus', 'Institution', 'College Name', 
+      'University Campus', 'Study Center', 'Branch Campus'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'course': {
+    patterns: ['Course', 'Program', 'Degree', 'Course Type', 'Graduation'],
+    priority: 6,
+    exactMatch: false
+  },
+  'branch': {
+    patterns: [
+      'UG BRANCH', 'Branch', 'Department', 'Specialization', 'Stream',
+      'Engineering Branch', 'Subject', 'Major', 'Field of Study',
+      'UG Branch', 'Undergraduate Branch'
+    ],
+    priority: 7,
+    exactMatch: false
+  },
+
   
-  // Fixed placement and status fields
-  'backlogs': [
-    'Do you have any current backlogs', 'Current Backlogs', 'Backlogs', 'Any Backlogs',
-    'current backlogs'
-  ],
-  'placementStatus': [
-    'Are you placed', 'Placement Status', 'Job Status', 'placed',
-    'Mention the company name and CTC'
-  ],
-  'neopatScore': [
-    'NEOPAT SCORE LEVEL', 'NEOPAT Score', 'Aptitude Score', 'NEOPAT LEVEL',
-    'Neo Pat Score', 'Neopat Level'
-  ],
-  'bootcampAttendance': [
-    'Are you attending bootcamp training daily', 'Bootcamp Attendance', 'Training Attendance',
-    'bootcamp training daily', 'Attendance of DSCE/DSATM/DSU'
-  ],
-  'bootcampProof': [
-    'Upload proof of Bootcamp training attendance', 'Bootcamp proof', 'Training proof'
-  ],
-  
-  // Location details
-  'nativePlace': [
-    'Native place', 'Native Place', 'Place of Birth', 'Hometown',
-    'Birth Place', 'Origin', 'Home Town'
-  ],
-  'permanentAddress': [
-    'Permanent address', 'Permanent Address', 'Address', 'Home Address',
-    'Residential Address', 'Full Address'
-  ],
-  
-  // Special categories
-  'pwd': [
-    'PWD', 'PWD(Persons with disabilities)', 'Persons with disabilities',
-    'Disability Status', 'PWD - Yes/No', 'Persons with disabilities - Yes/No'
-  ],
-  'lgbtq': [
-    'LGBTQ', 'LGBTQ (Yes/No)', 'LGBTQ+', 'Sexual Orientation',
-    'LGBTQ - Yes/No'
-  ],
-  
-  // Confirmation fields
-  'confirmation': [
-    'Confirmation', 'Confirm', 'Agreement', 'Agree', 'Accept'
-  ],
-  'declaration': [
-    'Declaration', 'I have read', 'All details provided above are correct',
-    'double checked before submission', 'Placement dept can take any action'
-  ],
-  'resume': [
-    'Upload resume', 'Resume', 'CV', 'PDF FORMAT ONLY'
-  ]
+  // Status fields
+  'backlogs': {
+    patterns: [
+      'Do you have any current backlogs', 'Current Backlogs', 'Backlogs', 
+      'Any Backlogs', 'current backlogs', 'Do you have Backlogs'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'placementStatus': {
+    patterns: [
+      'Are you placed', 'Placement Status', 'Job Status', 'placed',
+      'Mention the company name and CTC', 'Are you placed, if yes'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'neopatScore': {
+    patterns: [
+      'NEOPAT SCORE LEVEL', 'NEOPAT Score', 'Aptitude Score', 'NEOPAT LEVEL',
+      'Neo Pat Score', 'Neopat Level', 'NECT written test'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'jobInterest': {
+    patterns: [
+      'Are you seriously interested', 'Job interest', 'Ready to join',
+      'Interested in job role', 'Job readiness', 'Immediate joining'
+    ],
+    priority: 7,
+    exactMatch: false
+  }
 };
 
 let savedFormData = {};
@@ -126,68 +186,94 @@ chrome.storage.sync.get(["formData"], ({ formData }) => {
   }
 });
 
-// Enhanced matching function with priority system
+// Enhanced field matching with priority and context awareness
 function findMatchingFieldKey(questionText) {
   const normalizedQuestion = questionText.toLowerCase().trim();
   const cleanQuestion = normalizedQuestion.replace(/[*()[\]]/g, '').replace(/\s+/g, ' ').trim();
   
-  // Priority matching - more specific matches first
-  const priorityOrder = [
-    'firstName', 'middleName', 'lastName', 'collegeEmail', 'email', 'usn', 
-    'backlogs', 'bootcampAttendance', 'bootcampProof', 'placementStatus',
-    'neopatScore', 'cgpa', 'mcaCgpa', 'branch', 'course', 'permanentAddress',
-    'nativePlace', 'pwd', 'lgbtq', 'confirmation', 'declaration', 'resume',
-    'name', 'dob', 'gender', 'phone', 'tenth', 'twelfth'
-  ];
+  let bestMatch = null;
+  let highestScore = 0;
   
-  for (const key of priorityOrder) {
-    if (fieldMappings[key]) {
-      for (const pattern of fieldMappings[key]) {
-        const cleanPattern = pattern.toLowerCase().replace(/[*()[\]]/g, '').replace(/\s+/g, ' ').trim();
-        
-        if (
-          cleanQuestion === cleanPattern ||
-          cleanQuestion.includes(cleanPattern) ||
-          cleanPattern.includes(cleanQuestion) ||
-          matchesKeyWords(cleanQuestion, cleanPattern) ||
-          fuzzyMatch(cleanQuestion, cleanPattern)
-        ) {
-          return key;
-        }
+  // Sort by priority (highest first)
+  const sortedKeys = Object.keys(fieldMappings).sort((a, b) => {
+    return (fieldMappings[b].priority || 0) - (fieldMappings[a].priority || 0);
+  });
+  
+  for (const key of sortedKeys) {
+    const config = fieldMappings[key];
+    let matchScore = 0;
+    
+    for (const pattern of config.patterns) {
+      const cleanPattern = pattern.toLowerCase().replace(/[*()[\]]/g, '').replace(/\s+/g, ' ').trim();
+      
+      // Exact match gets highest score
+      if (cleanQuestion === cleanPattern) {
+        matchScore = 100 + config.priority;
+        break;
+      }
+      
+      // Contains match
+      if (cleanQuestion.includes(cleanPattern) || cleanPattern.includes(cleanQuestion)) {
+        matchScore = Math.max(matchScore, 80 + config.priority);
+      }
+      
+      // Keyword matching for email fields
+      if (config.keywords && key.includes('Email')) {
+        const keywordScore = calculateKeywordScore(cleanQuestion, config.keywords);
+        matchScore = Math.max(matchScore, keywordScore + config.priority);
+      }
+      
+      // Word-based matching
+      const wordScore = calculateWordMatchScore(cleanQuestion, cleanPattern);
+      if (wordScore > 0) {
+        matchScore = Math.max(matchScore, wordScore + config.priority);
+      }
+    }
+    
+    if (matchScore > highestScore) {
+      highestScore = matchScore;
+      bestMatch = key;
+    }
+  }
+  
+  console.log(`🔍 Question: "${questionText}" -> Match: ${bestMatch} (Score: ${highestScore})`);
+  return bestMatch;
+}
+
+// Calculate keyword matching score for email differentiation
+function calculateKeywordScore(question, keywords) {
+  let score = 0;
+  for (const keyword of keywords) {
+    if (question.includes(keyword.toLowerCase())) {
+      score += 20;
+    }
+  }
+  return score;
+}
+
+// Enhanced word matching with better scoring
+function calculateWordMatchScore(question, pattern) {
+  const questionWords = question.split(' ').filter(word => word.length > 2);
+  const patternWords = pattern.split(' ').filter(word => word.length > 2);
+  
+  if (patternWords.length === 0) return 0;
+  
+  let matchedWords = 0;
+  for (const pWord of patternWords) {
+    for (const qWord of questionWords) {
+      if (qWord.includes(pWord) || pWord.includes(qWord) || 
+          levenshteinDistance(qWord, pWord) <= 2) {
+        matchedWords++;
+        break;
       }
     }
   }
   
-  return null;
+  const matchRatio = matchedWords / patternWords.length;
+  return matchRatio >= 0.6 ? Math.floor(matchRatio * 60) : 0;
 }
 
-// Helper function for word-based matching
-function matchesKeyWords(question, pattern) {
-  const questionWords = question.split(' ').filter(word => word.length > 2);
-  const patternWords = pattern.split(' ').filter(word => word.length > 2);
-  
-  let matches = 0;
-  for (const word of patternWords) {
-    if (questionWords.some(qWord => qWord.includes(word) || word.includes(qWord))) {
-      matches++;
-    }
-  }
-  
-  return matches > 0 && matches >= Math.ceil(patternWords.length * 0.6);
-}
-
-// Helper function for fuzzy matching
-function fuzzyMatch(str1, str2) {
-  const longer = str1.length > str2.length ? str1 : str2;
-  const shorter = str1.length > str2.length ? str2 : str1;
-  
-  if (longer.length === 0) return true;
-  
-  const similarity = (longer.length - levenshteinDistance(longer, shorter)) / longer.length;
-  return similarity > 0.8;
-}
-
-// Levenshtein distance calculation
+// Levenshtein distance for fuzzy matching
 function levenshteinDistance(str1, str2) {
   const matrix = [];
   for (let i = 0; i <= str2.length; i++) {
@@ -212,31 +298,32 @@ function levenshteinDistance(str1, str2) {
   return matrix[str2.length][str1.length];
 }
 
-// Fixed input field filling function
+// Robust input field filling
 function fillInputField(input, value) {
   if (!input || !value) return false;
   
   try {
-    // Clear any existing value first
+    // Clear existing value
     input.focus();
+    input.select();
+    document.execCommand('delete');
     input.value = '';
     
-    // Use proper value setting for different input types
+    // Process value based on input type
     const inputType = (input.type || 'text').toLowerCase();
-    let processedValue = value.toString();
+    let processedValue = value.toString().trim();
     
-    // Handle specific input types
     if (inputType === 'number') {
       processedValue = parseFloat(processedValue) || processedValue;
-    } else if (inputType === 'date' && processedValue.includes('-')) {
-      // Convert DD-MM-YYYY to YYYY-MM-DD for date inputs
-      const parts = processedValue.split('-');
+    } else if (inputType === 'date' && processedValue.includes('/')) {
+      // Convert DD/MM/YYYY or DD-MM-YYYY to YYYY-MM-DD
+      const parts = processedValue.split(/[/-]/);
       if (parts.length === 3 && parts[0].length <= 2) {
         processedValue = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
       }
     }
     
-    // Set value using multiple methods for compatibility
+    // Set value using multiple approaches
     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
     if (nativeInputValueSetter) {
       nativeInputValueSetter.call(input, processedValue);
@@ -244,58 +331,42 @@ function fillInputField(input, value) {
     
     input.value = processedValue;
     
-    // Trigger events
-    const events = ['input', 'change', 'blur', 'keyup'];
+    // Trigger comprehensive events
+    const events = [
+      'input', 'change', 'keyup', 'keydown', 'blur', 'focus'
+    ];
+    
     events.forEach(eventType => {
       const event = new Event(eventType, { bubbles: true, cancelable: true });
       input.dispatchEvent(event);
     });
     
-    // Special handling for React/Vue
-    const reactEvent = new Event('input', { bubbles: true });
-    reactEvent.simulated = true;
-    input.dispatchEvent(reactEvent);
+    // Additional React/modern framework events
+    const inputEvent = new InputEvent('input', { 
+      bubbles: true, 
+      cancelable: true, 
+      data: processedValue 
+    });
+    input.dispatchEvent(inputEvent);
+    
+    // Verify the value was set
+    setTimeout(() => {
+      if (input.value !== processedValue) {
+        console.log(`⚠️ Value verification failed, retrying...`);
+        input.value = processedValue;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }, 100);
     
     return true;
   } catch (error) {
-    console.error('Error filling input field:', error);
+    console.error('❌ Error filling input field:', error);
     return false;
   }
 }
 
-// Enhanced dropdown handling
-function fillDropdownField(container, value, questionContainer) {
-  if (!container || !value) return false;
-  
-  const valueToMatch = value.toString().toLowerCase().trim();
-  
-  try {
-    // Wait for dropdown to open
-    setTimeout(() => {
-      const options = document.querySelectorAll('[role="option"], option, .option-item, [data-value]');
-      
-      for (const option of options) {
-        const optionText = (option.textContent || option.innerText || '').trim().toLowerCase();
-        const dataValue = (option.getAttribute('data-value') || '').toLowerCase();
-        
-        if (optionText === valueToMatch || dataValue === valueToMatch || 
-            optionText.includes(valueToMatch) || valueToMatch.includes(optionText)) {
-          
-          option.click();
-          return true;
-        }
-      }
-    }, 200);
-    
-    return false;
-  } catch (error) {
-    console.error('Error filling dropdown:', error);
-    return false;
-  }
-}
-
-// Enhanced radio button handling
-function fillRadioField(container, value) {
+// Enhanced radio button handling with better matching
+function fillRadioField(container, value, fieldKey) {
   if (!container || !value) return false;
   
   const valueToMatch = value.toString().toLowerCase().trim();
@@ -304,158 +375,179 @@ function fillRadioField(container, value) {
     const radios = container.querySelectorAll('[role="radio"], input[type="radio"]');
     
     for (const radio of radios) {
-      const radioLabel = radio.closest('label, [role="radiogroup"] > div');
-      const labelText = radioLabel ? radioLabel.textContent.toLowerCase().trim() : '';
+      const radioContainer = radio.closest('label, [role="radiogroup"] > div, .freebirdFormviewerViewItemsRadioChoice');
+      const labelText = radioContainer ? radioContainer.textContent.toLowerCase().trim() : '';
       const radioValue = (radio.value || '').toLowerCase();
       
-      // Enhanced matching logic
-      const isMatch = 
-        labelText === valueToMatch ||
-        radioValue === valueToMatch ||
-        labelText.includes(valueToMatch) ||
-        (valueToMatch === 'no' && labelText.includes('no')) ||
-        (valueToMatch === 'yes' && labelText.includes('yes')) ||
-        (valueToMatch === 'male' && labelText.includes('male')) ||
-        (valueToMatch === 'female' && labelText.includes('female')) ||
-        (valueToMatch === 'b.e' && (labelText.includes('b.e') || labelText.includes('bachelor'))) ||
-        (valueToMatch === 'ise' && labelText.includes('information science'));
+      // Enhanced matching logic based on field type
+      let isMatch = false;
+      
+      if (fieldKey === 'gender') {
+        isMatch = (valueToMatch === 'male' && labelText.includes('male')) ||
+                  (valueToMatch === 'female' && labelText.includes('female')) ||
+                  (valueToMatch === 'm' && labelText === 'male') ||
+                  (valueToMatch === 'f' && labelText === 'female');
+      } else if (fieldKey === 'backlogs' || fieldKey === 'placementStatus') {
+        isMatch = (valueToMatch === 'no' && (labelText.includes('no') || labelText === 'no')) ||
+                  (valueToMatch === 'yes' && (labelText.includes('yes') || labelText === 'yes'));
+      } else {
+        isMatch = labelText === valueToMatch ||
+                  radioValue === valueToMatch ||
+                  labelText.includes(valueToMatch) ||
+                  valueToMatch.includes(labelText);
+      }
       
       if (isMatch) {
         radio.click();
+        
+        // Double-check selection after a delay
         setTimeout(() => {
-          // Double-check if selection worked
-          if (!radio.checked) radio.click();
-        }, 100);
+          if (!radio.checked && radio.getAttribute('aria-checked') !== 'true') {
+            console.log(`🔄 Retrying radio selection for: ${fieldKey}`);
+            radio.click();
+          }
+        }, 200);
+        
         return true;
       }
     }
     
     return false;
   } catch (error) {
-    console.error('Error filling radio field:', error);
+    console.error('❌ Error filling radio field:', error);
     return false;
   }
 }
 
-// Enhanced checkbox handling
-function fillCheckboxField(container, value) {
-  if (!container || !value) return false;
-  
-  const valueToMatch = value.toString().toLowerCase().trim();
-  
-  try {
-    const checkboxes = container.querySelectorAll('[role="checkbox"], input[type="checkbox"]');
-    
-    for (const checkbox of checkboxes) {
-      const checkboxLabel = checkbox.closest('label, [role="group"] > div');
-      const labelText = checkboxLabel ? checkboxLabel.textContent.toLowerCase().trim() : '';
-      
-      if (labelText.includes(valueToMatch) || valueToMatch.includes(labelText)) {
-        const shouldCheck = ['yes', 'true', '1', 'agree', 'confirm', 'accept'].includes(valueToMatch);
-        const shouldUncheck = ['no', 'false', '0', 'disagree', 'decline'].includes(valueToMatch);
-        
-        if (shouldCheck && !checkbox.checked) {
-          checkbox.click();
-          return true;
-        } else if (shouldUncheck && checkbox.checked) {
-          checkbox.click();
-          return true;
-        }
-      }
-    }
-    
-    return false;
-  } catch (error) {
-    console.error('Error filling checkbox field:', error);
-    return false;
-  }
-}
-
-// Enhanced data processing with field-specific logic
-function getProcessedValue(key, originalValue) {
+// Robust data processing with proper name handling
+function getProcessedValue(key, originalValue, questionText = '') {
   const value = originalValue.toString().trim();
   
   switch (key) {
     case 'firstName':
+      // Extract first name only
       return value.split(' ')[0] || value;
+      
     case 'middleName':
+      // Handle middle name extraction properly
       const parts = value.split(' ');
-      return parts.length > 2 ? parts.slice(1, -1).join(' ') : (parts.length === 2 ? '' : value);
+      if (parts.length === 2) {
+        return '.'; // No middle name, use dot
+      } else if (parts.length > 2) {
+        return parts.slice(1, -1).join(' '); // Everything between first and last
+      }
+      return '.'; // Default for no middle name
+      
     case 'lastName':
+      // Extract last name properly
       const nameParts = value.split(' ');
-      return nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+      if (nameParts.length > 1) {
+        return nameParts[nameParts.length - 1]; // Last part
+      }
+      return ''; // No last name if only one word
+      
+    case 'fullName':
+      return value; // Use complete name as-is
+      
+    case 'personalEmail':
+      // Always use Gmail for personal email fields
+      return savedFormData.email || value;
+      
     case 'collegeEmail':
-      return savedFormData.collegeEmail || savedFormData.email || value;
+      // Use college email specifically
+      return savedFormData.collegeEmail || savedFormData.collegeId || value;
+      
     case 'backlogs':
       return savedFormData.backlogs || 'No';
-    case 'bootcampAttendance':
-      return savedFormData.bootcampAttendance || 'Yes';
+      
     case 'placementStatus':
       return savedFormData.placementStatus || 'No';
-    case 'confirmation':
-      return 'Yes';
-    case 'declaration':
-      return 'Yes';
+      
+    case 'gender':
+      // Normalize gender values
+      const genderLower = value.toLowerCase();
+      if (genderLower.includes('male') && !genderLower.includes('female')) {
+        return 'Male';
+      } else if (genderLower.includes('female')) {
+        return 'Female';
+      }
+      return value;
+      
     default:
       return value;
   }
 }
 
-// Main autofill function with enhanced logic
+// Main enhanced autofill function
 function fillGoogleForm() {
-  console.log("🔄 Starting autofill process...");
+  console.log("🔄 Starting enhanced autofill process...");
   
   if (Object.keys(savedFormData).length === 0) {
     console.log("❌ No saved data found");
+    showNotification("❌ No saved data found. Please set up your data first.", '#f44336');
     return;
   }
   
   let filledCount = 0;
   const processedQuestions = new Set();
+  const failedFields = [];
   
-  // Enhanced question detection
-  const questionContainers = document.querySelectorAll('[role="listitem"], .freebirdFormviewerViewItemsItemItem');
+  // Find all question containers
+  const questionContainers = document.querySelectorAll(
+    '[role="listitem"], .freebirdFormviewerViewItemsItemItem, .freebirdFormviewerComponentsQuestionBaseRoot'
+  );
+  
+  console.log(`📊 Found ${questionContainers.length} question containers`);
   
   questionContainers.forEach((container, index) => {
-    try {
-      const questionElement = container.querySelector('[role="heading"], .freebirdFormviewerViewItemsItemItemTitle');
-      const questionText = questionElement ? questionElement.textContent.trim() : '';
-      
-      if (!questionText || processedQuestions.has(questionText)) {
-        return;
-      }
-      
-      processedQuestions.add(questionText);
-      console.log(`📝 Processing question ${index + 1}: "${questionText}"`);
-      
-      const matchedKey = findMatchingFieldKey(questionText);
-      
-      if (!matchedKey) {
-        console.log(`⚠️ No match found for: "${questionText}"`);
-        return;
-      }
-      
-      const rawValue = savedFormData[matchedKey];
-      if (!rawValue) {
-        console.log(`⚠️ No data found for key: ${matchedKey}`);
-        return;
-      }
-      
-      const value = getProcessedValue(matchedKey, rawValue);
-      console.log(`✅ Found match: ${matchedKey} = "${value}"`);
-      
-      let filled = false;
-      
-      // Try different input types in order of priority
-      setTimeout(() => {
-        // 1. Text inputs
-        const textInputs = container.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="number"], textarea, input:not([type])');
-        if (textInputs.length > 0 && !filled) {
-          for (const input of textInputs) {
+    setTimeout(() => {
+      try {
+        const questionElement = container.querySelector(
+          '[role="heading"], .freebirdFormviewerViewItemsItemItemTitle, .freebirdFormviewerComponentsQuestionBaseTitle'
+        );
+        
+        const questionText = questionElement ? questionElement.textContent.trim() : '';
+        
+        if (!questionText || processedQuestions.has(questionText)) {
+          return;
+        }
+        
+        processedQuestions.add(questionText);
+        console.log(`📝 Processing question ${index + 1}: "${questionText}"`);
+        
+        const matchedKey = findMatchingFieldKey(questionText);
+        
+        if (!matchedKey) {
+          console.log(`⚠️ No match found for: "${questionText}"`);
+          return;
+        }
+        
+        const rawValue = savedFormData[matchedKey] || savedFormData[matchedKey.replace('personal', '').replace('Email', 'email')];
+        
+        if (!rawValue) {
+          console.log(`⚠️ No data found for key: ${matchedKey}`);
+          failedFields.push({ question: questionText, key: matchedKey, reason: 'No data' });
+          return;
+        }
+        
+        const value = getProcessedValue(matchedKey, rawValue, questionText);
+        console.log(`✅ Processing: ${matchedKey} = "${value}" for question: "${questionText}"`);
+        
+        let filled = false;
+        
+        // Try filling based on field type priority
+        
+        // 1. Text inputs (highest priority)
+        const textInputs = container.querySelectorAll(
+          'input[type="text"], input[type="email"], input[type="tel"], input[type="number"], textarea, input:not([type])'
+        );
+        
+        for (const input of textInputs) {
+          if (!input.disabled && !input.readOnly) {
             if (fillInputField(input, value)) {
               filled = true;
               filledCount++;
-              console.log(`✅ Successfully filled: ${matchedKey} = "${value}"`);
+              console.log(`✅ Successfully filled text input: ${matchedKey} = "${value}"`);
               break;
             }
           }
@@ -468,76 +560,77 @@ function fillGoogleForm() {
             if (fillInputField(input, value)) {
               filled = true;
               filledCount++;
-              console.log(`✅ Successfully filled: ${matchedKey} = "${value}"`);
+              console.log(`✅ Successfully filled date input: ${matchedKey} = "${value}"`);
               break;
             }
           }
         }
         
         // 3. Radio buttons
-        if (!filled && fillRadioField(container, value)) {
+        if (!filled && fillRadioField(container, value, matchedKey)) {
           filled = true;
           filledCount++;
-          console.log(`✅ Successfully filled: ${matchedKey} = "${value}"`);
-        }
-        
-        // 4. Dropdowns
-        if (!filled) {
-          const dropdowns = container.querySelectorAll('[role="listbox"], select, [role="button"][aria-haspopup="listbox"]');
-          for (const dropdown of dropdowns) {
-            dropdown.click();
-            if (fillDropdownField(dropdown, value, container)) {
-              filled = true;
-              filledCount++;
-              console.log(`✅ Successfully filled: ${matchedKey} = "${value}"`);
-              break;
-            }
-          }
-        }
-        
-        // 5. Checkboxes
-        if (!filled && fillCheckboxField(container, value)) {
-          filled = true;
-          filledCount++;
-          console.log(`✅ Successfully filled: ${matchedKey} = "${value}"`);
+          console.log(`✅ Successfully filled radio: ${matchedKey} = "${value}"`);
         }
         
         if (!filled) {
           console.log(`❌ Failed to fill: ${matchedKey} for question: "${questionText}"`);
+          failedFields.push({ question: questionText, key: matchedKey, reason: 'Fill failed' });
         }
-      }, 100 * index); // Stagger the filling to avoid conflicts
-      
-    } catch (error) {
-      console.error(`❌ Error processing question ${index + 1}:`, error);
-    }
+        
+      } catch (error) {
+        console.error(`❌ Error processing question ${index + 1}:`, error);
+        failedFields.push({ question: questionText || 'Unknown', key: 'unknown', reason: error.message });
+      }
+    }, 300 * index); // Increased delay to avoid conflicts
   });
   
-  // Final status
+  // Final status report
   setTimeout(() => {
     console.log(`🎉 Autofill completed! Successfully filled ${filledCount} fields.`);
-    showNotification(`✅ Auto-filled ${filledCount} fields successfully!`, '#4CAF50');
-  }, 3000);
+    
+    if (failedFields.length > 0) {
+      console.log("⚠️ Failed fields:", failedFields);
+      showNotification(`✅ Filled ${filledCount} fields. ${failedFields.length} fields need manual attention.`, '#FF9800');
+    } else {
+      showNotification(`✅ Perfect! Auto-filled all ${filledCount} fields successfully!`, '#4CAF50');
+    }
+  }, 5000);
 }
 
 // Enhanced notification system
 function showNotification(message, color = '#4CAF50') {
+  // Remove existing notifications
+  const existing = document.querySelectorAll('.autofill-notification');
+  existing.forEach(n => n.remove());
+  
   const notification = document.createElement('div');
+  notification.className = 'autofill-notification';
   notification.style.cssText = `
     position: fixed; top: 20px; right: 20px; z-index: 10000;
-    background: ${color}; color: white; padding: 15px 20px;
-    border-radius: 8px; font-size: 16px; font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    max-width: 300px; word-wrap: break-word;
-    animation: slideIn 0.3s ease-out;
+    background: ${color}; color: white; padding: 16px 24px;
+    border-radius: 12px; font-size: 16px; font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    max-width: 400px; word-wrap: break-word;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.4;
+    transform: translateX(420px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   `;
   
   notification.textContent = message;
   document.body.appendChild(notification);
   
+  // Slide in
   setTimeout(() => {
-    notification.style.animation = 'slideIn 0.3s ease-out reverse';
+    notification.style.transform = 'translateX(0)';
+  }, 100);
+  
+  // Slide out and remove
+  setTimeout(() => {
+    notification.style.transform = 'translateX(420px)';
     setTimeout(() => notification.remove(), 300);
-  }, 5000);
+  }, 6000);
 }
 
 // Message listener
@@ -546,7 +639,9 @@ window.addEventListener('message', (event) => {
     chrome.storage.sync.get(["formData"], ({ formData }) => {
       if (formData) {
         savedFormData = formData;
-        setTimeout(fillGoogleForm, 500);
+        setTimeout(fillGoogleForm, 1000);
+      } else {
+        showNotification("❌ No form data found. Please configure your details first.", '#f44336');
       }
     });
   }
@@ -562,16 +657,23 @@ chrome.storage.onChanged.addListener((changes) => {
 
 // Initialize
 function init() {
-  console.log("🚀 Initializing College Form Autofiller...");
-  setTimeout(() => {
-    if (savedFormData && Object.keys(savedFormData).length > 0) {
-      fillGoogleForm();
-    }
-  }, 2000);
+  console.log("🚀 Initializing Enhanced College Form Autofiller...");
+  
+  // Only auto-fill if we have data and we're on a Google Form
+  if (window.location.hostname.includes('docs.google.com')) {
+    setTimeout(() => {
+      if (savedFormData && Object.keys(savedFormData).length > 0) {
+        fillGoogleForm();
+      }
+    }, 2000);
+  }
 }
 
+// Wait for page load
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
 }
+
+console.log("✨ Enhanced College Form Autofiller loaded successfully!");
