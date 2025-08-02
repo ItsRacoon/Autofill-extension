@@ -16,60 +16,38 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       width: 380px;
       min-height: 600px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #2F323A;
       color: #333;
       overflow-x: hidden;
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: #FAFAFA;
       border-radius: 20px 20px 0 0;
       margin-top: 20px;
       padding: 0;
       min-height: calc(100vh - 20px);
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15);
     }
 
     .header {
-      background: linear-gradient(135deg, #4285f4, #34a853);
+      background: #D81E5B;
       color: white;
       text-align: center;
       padding: 25px 20px;
       border-radius: 20px 20px 0 0;
       position: relative;
-      overflow: hidden;
-    }
-
-    .header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
 
     .header h1 {
       font-size: 20px;
       font-weight: 600;
       margin-bottom: 8px;
-      position: relative;
-      z-index: 2;
     }
 
     .header p {
       font-size: 14px;
       opacity: 0.9;
-      position: relative;
-      z-index: 2;
     }
 
     .content {
@@ -78,7 +56,7 @@
 
     .tabs {
       display: flex;
-      background: #f8f9fa;
+      background: #f5f5f5;
       border-radius: 12px;
       padding: 4px;
       margin-bottom: 25px;
@@ -96,15 +74,20 @@
       font-weight: 500;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       position: relative;
       z-index: 2;
     }
 
     .tab.active {
-      color: #4285f4;
-      background: white;
-      box-shadow: 0 2px 8px rgba(66, 133, 244, 0.15);
+      color: white;
+      background: #D81E5B;
+      box-shadow: 0 2px 6px rgba(216, 30, 91, 0.25);
+    }
+
+    .tab:hover:not(.active) {
+      background: rgba(216, 30, 91, 0.1);
+      color: #D81E5B;
     }
 
     .tab i {
@@ -113,16 +96,15 @@
 
     .form-section {
       display: none;
-      animation: fadeIn 0.3s ease;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
     .form-section.active {
       display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .form-group {
@@ -134,7 +116,7 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
-      color: #444;
+      color: #2F323A;
       font-size: 14px;
     }
 
@@ -153,16 +135,15 @@
       border: 2px solid #e9ecef;
       border-radius: 12px;
       font-size: 14px;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       background: white;
       position: relative;
     }
 
     .form-control:focus {
       outline: none;
-      border-color: #4285f4;
-      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
-      transform: translateY(-1px);
+      border-color: #D81E5B;
+      box-shadow: 0 0 0 3px rgba(216, 30, 91, 0.1);
     }
 
     .form-control::placeholder {
@@ -187,7 +168,7 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
       text-transform: none;
@@ -198,39 +179,26 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #4285f4, #34a853);
+      background: #D81E5B;
       color: white;
       margin-bottom: 12px;
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(66, 133, 244, 0.3);
+      background: #c11a52;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(216, 30, 91, 0.3);
     }
 
     .btn-secondary {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      background: #2F323A;
       color: white;
     }
 
     .btn-secondary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-    }
-
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn:hover::before {
-      left: 100%;
+      background: #252831;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(47, 50, 58, 0.3);
     }
 
     .status {
@@ -251,19 +219,19 @@
     }
 
     .status.success {
-      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      background: #d4edda;
       color: #155724;
       border: 1px solid #c3e6cb;
     }
 
     .status.error {
-      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
 
     .status.info {
-      background: linear-gradient(135deg, #cce7ff, #b3d9ff);
+      background: #cce7ff;
       color: #0c5460;
       border: 1px solid #b3d9ff;
     }
@@ -301,7 +269,7 @@
 
     .stats-value {
       font-weight: 600;
-      color: #4285f4;
+      color: #D81E5B;
     }
 
     .floating-action {
@@ -311,21 +279,21 @@
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #4285f4, #34a853);
+      background: #D81E5B;
       color: white;
       border: none;
-      box-shadow: 0 4px 20px rgba(66, 133, 244, 0.3);
+      box-shadow: 0 4px 20px rgba(216, 30, 91, 0.3);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 20px;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
     }
 
     .floating-action:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 30px rgba(66, 133, 244, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(216, 30, 91, 0.4);
     }
 
     .form-row {
@@ -362,12 +330,26 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
+      background: #D81E5B;
       border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: #a1a1a1;
+      background: #c11a52;
+    }
+
+    /* Performance optimizations */
+    .form-section:not(.active) {
+      display: none !important;
+    }
+
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
@@ -503,7 +485,13 @@
           <label for="course">Course</label>
           <div style="position: relative;">
             <i class="fas fa-graduation-cap"></i>
-            <input type="text" id="course" class="form-control" placeholder="B.E / B.Tech / MCA" />
+            <select id="course" class="form-control">
+              <option value="">Select Course</option>
+              <option value="B.E">B.E</option>
+              <option value="B.Tech">B.Tech</option>
+              <option value="MCA">MCA</option>
+              <option value="M.Tech">M.Tech</option>
+            </select>
           </div>
         </div>
 
@@ -546,7 +534,19 @@
           </div>
         </div>
 
-
+        <div class="form-group">
+          <label for="yearOfPassing">Year of Passing</label>
+          <div style="position: relative;">
+            <i class="fas fa-calendar-alt"></i>
+            <select id="yearOfPassing" class="form-control">
+              <option value="">Select Year</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+            </select>
+          </div>
+        </div>
 
         <div class="form-group">
           <label for="backlogs">Current Backlogs</label>
@@ -638,8 +638,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
 
       <div class="stats" id="stats" style="display: none;">

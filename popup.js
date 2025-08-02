@@ -7,7 +7,7 @@ class FormAutofiller {
     this.fieldList = [
       'usn', 'name', 'firstName', 'lastName', 'middleName', 'email', 'collegeEmail',
       'phone', 'gender', 'dob', 'tenth', 'twelfth', 'course', 'branch',
-      'graduationPercent', 'postGraduationPercent', 'campus', 'backlogs', 
+      'graduationPercent', 'postGraduationPercent', 'yearOfPassing', 'campus', 'backlogs', 
       'neopatScore', 'nativePlace', 'permanentAddress', 'placementStatus', 
       'bootcampAttendance', 'pwd'
     ];
@@ -445,9 +445,9 @@ class FormAutofiller {
       'twelfth': ['twelfth', '12th', 'hsc', 'class_12', 'puc', 'diploma', 'inter %', 'puc %', '12th %'],
       'course': ['course', 'degree', 'program', 'graduation'],
       'branch': ['branch', 'department', 'specialization', 'stream'],
-
       'graduationPercent': ['graduation %', 'graduation percent', 'ug %', 'be %', 'b.tech %', 'btech %'],
       'postGraduationPercent': ['post graduation %', 'pg %', 'mca %', 'm.tech %', 'mtech %', 'post graduation'],
+      'yearOfPassing': ['year of passing', 'passing year', 'graduation year', 'completion year'],
       'campus': ['campus', 'college campus', 'institution', 'college name'],
       'backlogs': ['backlogs', 'arrears', 'pending_subjects', 'do you have backlogs'],
       'neopatScore': ['neopat', 'neopat_score', 'test_score', 'nect written test'],

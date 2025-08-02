@@ -34,6 +34,14 @@ const fieldMappings = {
     priority: 9,
     exactMatch: false
   },
+  'name': {
+    patterns: [
+      'FULL NAME', 'Full Name', 'Student Name', 'Complete Name',
+      'Student Full Name', 'Your Name', 'Enter Name', 'Enter Full Name'
+    ],
+    priority: 9,
+    exactMatch: false
+  },
   
   // Email fields - differentiated clearly
   'personalEmail': {
@@ -113,6 +121,14 @@ const fieldMappings = {
       'Post Graduation %', 'PG %', 'MCA %', 'M.Tech %', 'MTech %', 
       'Masters %', 'Post Graduation Percentage', 'PG Percentage',
       'Post Graduation % ( For MCA, M.Tech Students)', 'Post Graduation % ( For MCA, M.Tech Students) [mention Marks other write NA]'
+    ],
+    priority: 8,
+    exactMatch: false
+  },
+  'yearOfPassing': {
+    patterns: [
+      'Year of Passing', 'Passing Year', 'Graduation Year', 'Year of Completion',
+      'Expected Year of Passing', 'Year of Graduation', 'Completion Year'
     ],
     priority: 8,
     exactMatch: false
@@ -315,7 +331,7 @@ function fillInputField(input, value) {
     
     if (inputType === 'number') {
       processedValue = parseFloat(processedValue) || processedValue;
-    } else if (inputType === 'date' && processedValue.includes('/')) {
+    } else if (inputType === 'date' && (processedValue.includes('/') || processedValue.includes('-'))) {
       // Convert DD/MM/YYYY or DD-MM-YYYY to YYYY-MM-DD
       const parts = processedValue.split(/[/-]/);
       if (parts.length === 3 && parts[0].length <= 2) {
@@ -365,56 +381,273 @@ function fillInputField(input, value) {
   }
 }
 
-// Enhanced radio button handling with better matching
-function fillRadioField(container, value, fieldKey) {
+// Google Forms specific radio button handling
+function fillGoogleFormsRadio(container, value, fieldKey) {
   if (!container || !value) return false;
   
   const valueToMatch = value.toString().toLowerCase().trim();
+  console.log(`🔘 Attempting to fill radio for ${fieldKey} with value: ${valueToMatch}`);
   
   try {
-    const radios = container.querySelectorAll('[role="radio"], input[type="radio"]');
+    // Google Forms radio buttons are in specific containers
+    const radioChoices = container.querySelectorAll(
+      '.freebirdFormviewerViewItemsRadioChoice, [role="radio"], [data-value], .freebirdFormviewerViewItemsRadioChoiceLabel'
+    );
     
-    for (const radio of radios) {
-      const radioContainer = radio.closest('label, [role="radiogroup"] > div, .freebirdFormviewerViewItemsRadioChoice');
-      const labelText = radioContainer ? radioContainer.textContent.toLowerCase().trim() : '';
-      const radioValue = (radio.value || '').toLowerCase();
+    console.log(`🔍 Found ${radioChoices.length} radio choices`);
+    
+    for (const choice of radioChoices) {
+      const labelText = choice.textContent.toLowerCase().trim();
+      const dataValue = choice.getAttribute('data-value') || '';
       
-      // Enhanced matching logic based on field type
+      console.log(`🔍 Checking radio option: "${labelText}"`);
+      
       let isMatch = false;
       
       if (fieldKey === 'gender') {
         isMatch = (valueToMatch === 'male' && labelText.includes('male')) ||
-                  (valueToMatch === 'female' && labelText.includes('female')) ||
-                  (valueToMatch === 'm' && labelText === 'male') ||
-                  (valueToMatch === 'f' && labelText === 'female');
-      } else if (fieldKey === 'backlogs' || fieldKey === 'placementStatus') {
-        isMatch = (valueToMatch === 'no' && (labelText.includes('no') || labelText === 'no')) ||
-                  (valueToMatch === 'yes' && (labelText.includes('yes') || labelText === 'yes'));
+                  (valueToMatch === 'female' && labelText.includes('female'));
+      } else if (fieldKey === 'backlogs') {
+        isMatch = (valueToMatch === 'no' && (labelText === 'no' || labelText.includes('no backlogs'))) ||
+                  (valueToMatch === 'yes' && (labelText === 'yes' || labelText.includes('have backlogs')));
+      } else if (fieldKey === 'placementStatus') {
+        isMatch = (valueToMatch === 'no' && labelText.includes('no')) ||
+                  (valueToMatch === 'yes' && labelText.includes('yes'));
       } else {
         isMatch = labelText === valueToMatch ||
-                  radioValue === valueToMatch ||
                   labelText.includes(valueToMatch) ||
-                  valueToMatch.includes(labelText);
+                  valueToMatch.includes(labelText) ||
+                  dataValue.toLowerCase() === valueToMatch;
       }
       
       if (isMatch) {
-        radio.click();
+        console.log(`✅ Found matching radio option: "${labelText}"`);
         
-        // Double-check selection after a delay
-        setTimeout(() => {
-          if (!radio.checked && radio.getAttribute('aria-checked') !== 'true') {
-            console.log(`🔄 Retrying radio selection for: ${fieldKey}`);
-            radio.click();
-          }
-        }, 200);
+        // Try multiple click strategies
+        choice.click();
+        
+        // Also try clicking the radio input inside
+        const radioInput = choice.querySelector('[role="radio"], input[type="radio"]');
+        if (radioInput) {
+          radioInput.click();
+        }
+        
+        // Try clicking parent containers
+        const parentChoice = choice.closest('.freebirdFormviewerViewItemsRadioChoice');
+        if (parentChoice && parentChoice !== choice) {
+          parentChoice.click();
+        }
+        
+        // Dispatch events
+        choice.dispatchEvent(new Event('click', { bubbles: true }));
+        choice.dispatchEvent(new Event('change', { bubbles: true }));
         
         return true;
       }
     }
     
+    console.log(`❌ No matching radio option found for ${fieldKey}: ${valueToMatch}`);
     return false;
   } catch (error) {
-    console.error('❌ Error filling radio field:', error);
+    console.error('❌ Error filling Google Forms radio field:', error);
+    return false;
+  }
+}
+
+// Handle regular select/dropdown fields
+function fillSelectField(select, value, fieldKey) {
+  if (!select || !value) return false;
+  
+  try {
+    const valueToMatch = value.toString().toLowerCase().trim();
+    
+    // For regular HTML select elements
+    if (select.tagName === 'SELECT') {
+      const options = Array.from(select.options);
+      
+      for (const option of options) {
+        const optionText = option.textContent.toLowerCase().trim();
+        const optionValue = option.value.toLowerCase().trim();
+        
+        // Enhanced matching logic
+        let isMatch = false;
+        
+        if (fieldKey === 'course') {
+          isMatch = (valueToMatch === 'b.e' && (optionText.includes('b.e') || optionValue.includes('b.e'))) ||
+                    (valueToMatch === 'b.tech' && (optionText.includes('b.tech') || optionValue.includes('b.tech'))) ||
+                    (valueToMatch === 'mca' && (optionText.includes('mca') || optionValue.includes('mca'))) ||
+                    (valueToMatch === 'm.tech' && (optionText.includes('m.tech') || optionValue.includes('m.tech')));
+        } else if (fieldKey === 'campus') {
+          isMatch = (valueToMatch === 'dsec' && (optionText.includes('dsec') || optionValue.includes('dsec'))) ||
+                    (valueToMatch === 'dsatm' && (optionText.includes('dsatm') || optionValue.includes('dsatm'))) ||
+                    (valueToMatch === 'dsu' && (optionText.includes('dsu') || optionValue.includes('dsu')));
+        } else if (fieldKey === 'backlogs') {
+          isMatch = (valueToMatch === 'no' && (optionText.includes('no') || optionValue.includes('no'))) ||
+                    (valueToMatch === 'yes' && (optionText.includes('yes') || optionValue.includes('yes')));
+        } else if (fieldKey === 'neopatScore') {
+          isMatch = optionText.includes(valueToMatch) || optionValue.includes(valueToMatch);
+        } else {
+          // General matching
+          isMatch = optionText === valueToMatch || 
+                    optionValue === valueToMatch ||
+                    optionText.includes(valueToMatch) ||
+                    valueToMatch.includes(optionText);
+        }
+        
+        if (isMatch) {
+          select.value = option.value;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          select.dispatchEvent(new Event('input', { bubbles: true }));
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('❌ Error filling select field:', error);
+    return false;
+  }
+}
+
+// Handle Google Forms specific dropdowns and radio buttons
+function fillGoogleFormsDropdown(container, value, fieldKey) {
+  if (!container || !value) return false;
+  
+  const valueToMatch = value.toString().toLowerCase().trim();
+  console.log(`📋 Attempting to fill field for ${fieldKey} with value: ${valueToMatch}`);
+  
+  try {
+    // First, try to find radio button options (many Google Forms use radio buttons instead of dropdowns)
+    const radioOptions = container.querySelectorAll(
+      '.freebirdFormviewerViewItemsRadioChoice, [role="radio"], [data-value]'
+    );
+    
+    console.log(`🔍 Found ${radioOptions.length} radio/choice options`);
+    
+    if (radioOptions.length > 0) {
+      for (const option of radioOptions) {
+        const optionText = option.textContent.toLowerCase().trim();
+        const dataValue = option.getAttribute('data-value') || '';
+        
+        console.log(`🔍 Checking option: "${optionText}"`);
+        
+        let isMatch = false;
+        
+        if (fieldKey === 'course') {
+          isMatch = (valueToMatch === 'b.e' && (optionText.includes('b.e') || optionText.includes('be'))) ||
+                    (valueToMatch === 'b.tech' && (optionText.includes('b.tech') || optionText.includes('btech') || optionText.includes('b tech'))) ||
+                    (valueToMatch === 'mca' && optionText.includes('mca')) ||
+                    (valueToMatch === 'm.tech' && (optionText.includes('m.tech') || optionText.includes('mtech') || optionText.includes('m tech')));
+        } else if (fieldKey === 'campus') {
+          isMatch = (valueToMatch === 'dsec' && optionText.includes('dsec')) ||
+                    (valueToMatch === 'dsatm' && optionText.includes('dsatm')) ||
+                    (valueToMatch === 'dsu' && optionText.includes('dsu'));
+        } else if (fieldKey === 'backlogs') {
+          isMatch = (valueToMatch === 'no' && (optionText === 'no' || optionText.includes('no'))) ||
+                    (valueToMatch === 'yes' && (optionText === 'yes' || optionText.includes('yes')));
+        } else if (fieldKey === 'neopatScore') {
+          isMatch = optionText.includes(valueToMatch) || valueToMatch.includes(optionText);
+        } else if (fieldKey === 'branch') {
+          // Handle branch matching with partial matches
+          const branchKeywords = valueToMatch.split(' ');
+          isMatch = branchKeywords.some(keyword => keyword.length > 2 && optionText.includes(keyword)) ||
+                    optionText.includes(valueToMatch) || 
+                    valueToMatch.includes(optionText);
+        } else if (fieldKey === 'yearOfPassing') {
+          isMatch = optionText.includes(valueToMatch) || dataValue === valueToMatch;
+        } else if (fieldKey === 'gender') {
+          isMatch = (valueToMatch === 'male' && optionText.includes('male')) ||
+                    (valueToMatch === 'female' && optionText.includes('female'));
+        } else {
+          // General matching
+          isMatch = optionText === valueToMatch || 
+                    optionText.includes(valueToMatch) ||
+                    valueToMatch.includes(optionText) ||
+                    dataValue.toLowerCase() === valueToMatch;
+        }
+        
+        if (isMatch) {
+          console.log(`✅ Found matching option: "${optionText}"`);
+          
+          // Try multiple click strategies for Google Forms
+          option.click();
+          
+          // Also try clicking any radio input inside
+          const radioInput = option.querySelector('[role="radio"], input[type="radio"]');
+          if (radioInput) {
+            radioInput.click();
+          }
+          
+          // Try clicking the label or parent container
+          const label = option.querySelector('label') || option.closest('label');
+          if (label) {
+            label.click();
+          }
+          
+          // Dispatch events
+          option.dispatchEvent(new Event('click', { bubbles: true }));
+          option.dispatchEvent(new Event('change', { bubbles: true }));
+          
+          return true;
+        }
+      }
+    }
+    
+    // If no radio options found, try dropdown approach
+    const dropdownTriggers = container.querySelectorAll(
+      '[role="button"][aria-haspopup="listbox"], [role="listbox"], .freebirdFormviewerViewItemsItemDropdownButton'
+    );
+    
+    console.log(`🔍 Found ${dropdownTriggers.length} dropdown triggers`);
+    
+    for (const trigger of dropdownTriggers) {
+      console.log(`🖱️ Clicking dropdown trigger`);
+      trigger.click();
+      
+      // Wait a bit and then look for options
+      setTimeout(() => {
+        const dropdownOptions = document.querySelectorAll(
+          '[role="option"], .freebirdFormviewerViewItemsItemDropdownOption'
+        );
+        
+        console.log(`🔍 Found ${dropdownOptions.length} dropdown options`);
+        
+        for (const option of dropdownOptions) {
+          const optionText = option.textContent.toLowerCase().trim();
+          
+          let isMatch = false;
+          
+          if (fieldKey === 'course') {
+            isMatch = (valueToMatch === 'b.e' && optionText.includes('b.e')) ||
+                      (valueToMatch === 'b.tech' && optionText.includes('b.tech')) ||
+                      (valueToMatch === 'mca' && optionText.includes('mca')) ||
+                      (valueToMatch === 'm.tech' && optionText.includes('m.tech'));
+          } else if (fieldKey === 'campus') {
+            isMatch = (valueToMatch === 'dsec' && optionText.includes('dsec')) ||
+                      (valueToMatch === 'dsatm' && optionText.includes('dsatm')) ||
+                      (valueToMatch === 'dsu' && optionText.includes('dsu'));
+          } else if (fieldKey === 'neopatScore') {
+            isMatch = optionText.includes(valueToMatch);
+          } else if (fieldKey === 'branch') {
+            isMatch = optionText.includes(valueToMatch) || valueToMatch.includes(optionText);
+          } else {
+            isMatch = optionText.includes(valueToMatch);
+          }
+          
+          if (isMatch) {
+            console.log(`✅ Found matching dropdown option: "${optionText}"`);
+            option.click();
+            return true;
+          }
+        }
+      }, 500);
+    }
+    
+    console.log(`❌ No matching option found for ${fieldKey}: ${valueToMatch}`);
+    return false;
+  } catch (error) {
+    console.error('❌ Error filling Google Forms field:', error);
     return false;
   }
 }
@@ -425,10 +658,23 @@ function getProcessedValue(key, originalValue, questionText = '') {
   
   switch (key) {
     case 'firstName':
-      // Extract first name only
+      // Extract first name from full name if needed
+      if (savedFormData['name'] && !savedFormData['firstName']) {
+        return savedFormData['name'].split(' ')[0] || value;
+      }
       return value.split(' ')[0] || value;
       
     case 'middleName':
+      // Extract middle name from full name if needed
+      if (savedFormData['name'] && !savedFormData['middleName']) {
+        const parts = savedFormData['name'].split(' ');
+        if (parts.length === 2) {
+          return '.'; // No middle name, use dot
+        } else if (parts.length > 2) {
+          return parts.slice(1, -1).join(' '); // Everything between first and last
+        }
+        return '.'; // Default for no middle name
+      }
       // Handle middle name extraction properly
       const parts = value.split(' ');
       if (parts.length === 2) {
@@ -439,6 +685,14 @@ function getProcessedValue(key, originalValue, questionText = '') {
       return '.'; // Default for no middle name
       
     case 'lastName':
+      // Extract last name from full name if needed
+      if (savedFormData['name'] && !savedFormData['lastName']) {
+        const nameParts = savedFormData['name'].split(' ');
+        if (nameParts.length > 1) {
+          return nameParts[nameParts.length - 1]; // Last part
+        }
+        return ''; // No last name if only one word
+      }
       // Extract last name properly
       const nameParts = value.split(' ');
       if (nameParts.length > 1) {
@@ -447,6 +701,7 @@ function getProcessedValue(key, originalValue, questionText = '') {
       return ''; // No last name if only one word
       
     case 'fullName':
+    case 'name':
       return value; // Use complete name as-is
       
     case 'personalEmail':
@@ -515,6 +770,9 @@ function fillGoogleForm() {
         processedQuestions.add(questionText);
         console.log(`📝 Processing question ${index + 1}: "${questionText}"`);
         
+        // Debug: Log the container structure
+        console.log(`🔍 Container HTML:`, container.innerHTML.substring(0, 200) + '...');
+        
         const matchedKey = findMatchingFieldKey(questionText);
         
         if (!matchedKey) {
@@ -522,7 +780,16 @@ function fillGoogleForm() {
           return;
         }
         
-        const rawValue = savedFormData[matchedKey] || savedFormData[matchedKey.replace('personal', '').replace('Email', 'email')];
+        let rawValue = savedFormData[matchedKey] || savedFormData[matchedKey.replace('personal', '').replace('Email', 'email')];
+        
+        // Handle name field mapping - if looking for fullName but have name, use name
+        if (!rawValue && matchedKey === 'fullName' && savedFormData['name']) {
+          rawValue = savedFormData['name'];
+        }
+        // Handle email field mapping
+        if (!rawValue && matchedKey === 'personalEmail' && savedFormData['email']) {
+          rawValue = savedFormData['email'];
+        }
         
         if (!rawValue) {
           console.log(`⚠️ No data found for key: ${matchedKey}`);
@@ -566,11 +833,20 @@ function fillGoogleForm() {
           }
         }
         
-        // 3. Radio buttons
-        if (!filled && fillRadioField(container, value, matchedKey)) {
-          filled = true;
-          filledCount++;
-          console.log(`✅ Successfully filled radio: ${matchedKey} = "${value}"`);
+        // 3. Google Forms Radio buttons and Dropdowns (unified approach)
+        if (!filled) {
+          // Try the unified Google Forms approach first
+          if (fillGoogleFormsDropdown(container, value, matchedKey)) {
+            filled = true;
+            filledCount++;
+            console.log(`✅ Successfully filled Google Forms field: ${matchedKey} = "${value}"`);
+          }
+          // Fallback to the original radio approach
+          else if (fillGoogleFormsRadio(container, value, matchedKey)) {
+            filled = true;
+            filledCount++;
+            console.log(`✅ Successfully filled radio: ${matchedKey} = "${value}"`);
+          }
         }
         
         if (!filled) {
