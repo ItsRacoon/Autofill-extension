@@ -468,7 +468,7 @@ function fillGoogleFormsRadio(container, value, fieldKey) {
       }
       
       if (isMatch) {
-        console.log(`Found matching radio option: "${labelText}"`);
+        console.log(`✅ Found matching radio option: "${labelText}"`);
         
         // Try multiple click strategies with delays
         setTimeout(() => {
@@ -498,10 +498,10 @@ function fillGoogleFormsRadio(container, value, fieldKey) {
       }
     }
     
-    console.log(`No matching radio option found for ${fieldKey}: ${valueToMatch}`);
+    console.log(`❌ No matching radio option found for ${fieldKey}: ${valueToMatch}`);
     return false;
   } catch (error) {
-    console.error(' Error filling Google Forms radio field:', error);
+    console.error('❌ Error filling Google Forms radio field:', error);
     return false;
   }
 }
@@ -557,7 +557,7 @@ function fillSelectField(select, value, fieldKey) {
     
     return false;
   } catch (error) {
-    console.error('Error filling select field:', error);
+    console.error('❌ Error filling select field:', error);
     return false;
   }
 }
@@ -884,7 +884,7 @@ function fillGoogleForm() {
             if (fillInputField(input, value)) {
               filled = true;
               filledCount++;
-              console.log(`Successfully filled text input: ${matchedKey} = "${value}"`);
+              console.log(`✅ Successfully filled text input: ${matchedKey} = "${value}"`);
               break;
             }
           }
@@ -897,7 +897,7 @@ function fillGoogleForm() {
             if (fillInputField(input, value)) {
               filled = true;
               filledCount++;
-              console.log(`Successfully filled date input: ${matchedKey} = "${value}"`);
+              console.log(`✅ Successfully filled date input: ${matchedKey} = "${value}"`);
               break;
             }
           }
@@ -909,23 +909,23 @@ function fillGoogleForm() {
           if (fillGoogleFormsDropdown(container, value, matchedKey)) {
             filled = true;
             filledCount++;
-            console.log(` Successfully filled Google Forms field: ${matchedKey} = "${value}"`);
+            console.log(`✅ Successfully filled Google Forms field: ${matchedKey} = "${value}"`);
           }
           // Fallback to the original radio approach
           else if (fillGoogleFormsRadio(container, value, matchedKey)) {
             filled = true;
             filledCount++;
-            console.log(`Successfully filled radio: ${matchedKey} = "${value}"`);
+            console.log(`✅ Successfully filled radio: ${matchedKey} = "${value}"`);
           }
         }
         
         if (!filled) {
-          console.log(`Failed to fill: ${matchedKey} for question: "${questionText}"`);
+          console.log(`❌ Failed to fill: ${matchedKey} for question: "${questionText}"`);
           failedFields.push({ question: questionText, key: matchedKey, reason: 'Fill failed' });
         }
         
       } catch (error) {
-        console.error(` Error processing question ${index + 1}:`, error);
+        console.error(`❌ Error processing question ${index + 1}:`, error);
         failedFields.push({ question: questionText || 'Unknown', key: 'unknown', reason: error.message });
       }
     }, 300 * index); // Increased delay to avoid conflicts
@@ -1034,7 +1034,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       chrome.storage.sync.get(["formData"], ({ formData }) => {
         if (formData) {
           savedFormData = formData;
-          console.log(" Reloaded form data:", savedFormData);
+          console.log("📋 Reloaded form data:", savedFormData);
           
           // Start autofill process
           setTimeout(() => {
